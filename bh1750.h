@@ -21,6 +21,8 @@ typedef struct {
 	uint8_t addr;
 } bh1750_t;
 
+#define BH1750_I2C_ADDR			0x23	// Light Sensor
+
 #define BH1750_INSTR_POWER_DOWN	0b00000000
 #define BH1750_INSTR_POWER_ON	0b00000001
 #define BH1750_INSTR_RESET		0b00000111

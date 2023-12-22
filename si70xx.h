@@ -12,7 +12,10 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
+
+#ifdef __ACCUM_FBIT__
 #include <stdfix.h>
+#endif
 
 #include "bshal_i2cm.h"
 

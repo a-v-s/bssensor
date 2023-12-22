@@ -18,6 +18,7 @@ typedef struct {
 	uint8_t addr;
 } sht3x_t;
 
+#define SHT3X_I2C_ADDR 			0x44
 
 #pragma pack (push,1)
 typedef struct {

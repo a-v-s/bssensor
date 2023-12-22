@@ -87,7 +87,7 @@ int css811_measure(ccs811_t *css811, uint16_t *eCO2, uint16_t *TVOC ) {
 		// 0ppb to 1187ppb
 
 		if (eCO2) * eCO2 = be16toh(alg_result_data.eCO2);
-		if (TVOC) * TVOC = be16toh(alg_result_data.TVOC);
+		if (TVOC) * TVOC = be16toh(alg_result_data.eTVOC);
 		uint16_t raw_data = be16toh(alg_result_data.raw_data);
 		return 0;
 

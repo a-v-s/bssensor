@@ -14,6 +14,7 @@
 #include <stdfix.h>
 #endif 
 
+#define	LM75B_I2C_ADDR			0x48
 
 #define LM75B_REG_TEMP	(0x00)
 #define LM75B_REG_CONF	(0x01)

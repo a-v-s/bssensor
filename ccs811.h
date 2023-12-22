@@ -10,6 +10,8 @@
 
 #include "bshal_i2cm.h"
 
+#define CCS811_ADDR			0x5A
+
 typedef struct {
 	bshal_i2cm_instance_t * p_i2c;
 	uint8_t addr;
@@ -38,7 +40,7 @@ typedef struct {
 
 typedef struct {
 	uint16_t eCO2;
-	uint16_t TVOC;
+	uint16_t eTVOC;
 	ccs811_status_t status;
 	uint8_t error_id;
 	uint16_t raw_data;
