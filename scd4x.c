@@ -33,6 +33,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include <bshal_delay.h>
+
 int scd4x_start(scd4x_t *scd4x) {
 	int status;
 	uint16_t cmd;

@@ -50,6 +50,7 @@ typedef struct {
 #pragma pack (pop)
 
 
+int sht2x_init(sht2x_t* sht2x);
 int sht2x_get_temperature_C_float(sht2x_t* sht2x, float * result);
 int sht2x_get_humidity_float(sht2x_t* sht2x, float * result);
 

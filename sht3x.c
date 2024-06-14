@@ -31,6 +31,8 @@
 #include "sht3x.h"
 #include "endian.h"
 
+#include <bshal_delay.h>
+
 
 int sht3x_init(sht3x_t* sht3x) {
 	uint8_t cmd_reset[2] = {0x30, 0xA2};

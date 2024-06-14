@@ -33,13 +33,14 @@
 #ifdef __ACCUM_FBIT__
 #include <stdfix.h>
 #endif 
+#include <stdlib.h>
 
 #include "lm75b.h"
 #include "endian.h"
 
 int lm75b_get_temperature_C_float(lm75b_t *lm75b, float *result) {
 	uint8_t reg = LM75B_REG_TEMP;
-	uint16_t value;
+	int16_t value;
 
 	int status;
 	status = bshal_i2cm_send(lm75b->p_i2c, lm75b->addr, &reg, sizeof(reg),
@@ -54,15 +55,43 @@ int lm75b_get_temperature_C_float(lm75b_t *lm75b, float *result) {
 	// Incoming value is Big Endian
 	value = be16toh(value);
 
-	value >>= 5;
-	*result = 0.125f * (float) value;
+	// Rathen then doing float multiplication,
+	// note we are on soft float, this is expensive
+	// We bit juggle a bit. Note the input is a form of fixed point
+	// thus the multiplication is some bit shifting
+	//*result = 0.00390625f * (float) value;
+	union {
+		struct {
+			unsigned int fraction : 23;
+			unsigned int exponent : 8;
+			signed int sign : 1;
+		};
+		_Float32 value;
+		uint32_t as_uint32;
+	} f;
+	if (value == 0) {
+		f.exponent = 0;
+		f.fraction = 0;
+	} else {
+		f.sign = value < 0;
+		value = abs(value);
+		int hpos;
+		for (hpos = 14 ; hpos ; hpos--) {
+			if ( value & (1 << hpos)) break;
+		}
+		f.exponent = 119 + hpos;
+		f.fraction = value << (23 - hpos);
+	}
+	*result = f.value;
+
+
 	return status;
 }
 
 #ifdef __ACCUM_FBIT__
 int lm75b_get_temperature_C_accum(lm75b_t *lm75b, accum *result) {
 	uint8_t reg = LM75B_REG_TEMP;
-	uint16_t value;
+	int16_t value;
 
 	int status;
 	status = bshal_i2cm_send(lm75b->p_i2c, lm75b->addr, &reg, sizeof(reg),
@@ -77,8 +106,11 @@ int lm75b_get_temperature_C_accum(lm75b_t *lm75b, accum *result) {
 	// Incoming value is Big Endian
 	value = be16toh(value);
 
-	value >>= 5;
-	*result = 0.125k * (accum) value;
+	//	*result = 0.00390625k * (accum) value;
+
+	value /=2;
+	*result = *(short accum*)(&value);
+
 	return status;
 }
 #endif

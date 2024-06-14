@@ -28,11 +28,34 @@
 
  */
 
+// Driver for SHT2x and HTU2x Humidity/Temperature sensors
+
 #include "sht2x.h"
 #include "endian.h"
 
 
 //#define CLOCK_STRETCH
+
+int sht2x_init(sht2x_t* sht2x){
+	uint8_t cmd[] =   {0b11111110}; // temp without clock stretch
+	int status;
+	status = bshal_i2cm_send(sht2x->p_i2c, sht2x->addr, &cmd, sizeof(cmd), false);
+	if (status) return status;
+	// Datasheet SHT20, page 8, 5.5 Soft Reset
+	// The soft reset takes less than 15 ms.
+	bshal_delay_ms(15);
+	return 0;
+}
+
+int sht2x_heater(sht2x_t* sht2x, bool enable){
+	uint8_t cmd[] =   {0b11100110, 1};
+	cmd[1] |= enable << 1;
+	int status;
+	status = bshal_i2cm_send(sht2x->p_i2c, sht2x->addr, &cmd, sizeof(cmd), false);
+	if (status) return status;
+	return 0;
+}
+
 
 int sht2x_get_temperature_C_float(sht2x_t* sht2x, float * result){
 #ifdef CLOCK_STRETCH
@@ -52,7 +75,7 @@ int sht2x_get_temperature_C_float(sht2x_t* sht2x, float * result){
 	status = bshal_i2cm_recv(sht2x->p_i2c, sht2x->addr, &value, sizeof(value), false);
 	if (status) return status;
 
-	*result = -48.85f + 175.72f * (float)(be16toh(value.value)) / (float)(UINT16_MAX - 1);
+	*result = -48.85f + (175.72f * (float)(be16toh(value.value)) / (float)(UINT16_MAX));
 	return status;
 }
 
@@ -74,7 +97,7 @@ int sht2x_get_humidity_float(sht2x_t* sht2x, float * result){
 	status = bshal_i2cm_recv(sht2x->p_i2c, sht2x->addr, &value, sizeof(value), false);
 	if (status) return status;
 
-	*result = -6.0f + 125.0f * (float)(be16toh(value.value)) / (float)(UINT16_MAX - 1);
+	*result = -6.0f + (125.0f * (float)(be16toh(value.value)) / (float)(UINT16_MAX));
 	return status;
 }
 

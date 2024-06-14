@@ -8,6 +8,8 @@
 #include "hcd1080.h"
 #include "endian.h"
 
+#include <bshal_delay.h>
+
 int hcd1080_get_temperature_C_float(hcd1080_t *hcd1080, float *result) {
 	uint8_t cmd = HCD1080_REG_TEMPERATURE;
 	int16_t value;
@@ -17,13 +19,9 @@ int hcd1080_get_temperature_C_float(hcd1080_t *hcd1080, float *result) {
 			false);
 	if (status)
 		return status;
-	for (int i = 0; i < 3; i++) {
-		status = bshal_i2cm_recv(hcd1080->p_i2c, hcd1080->addr, &value,
-				sizeof(value), false);
-		if (!status)
-			break;
-		bshal_delay_ms(10);
-	}
+	bshal_delay_ms(15);
+	status = bshal_i2cm_recv(hcd1080->p_i2c, hcd1080->addr, &value,
+			sizeof(value), false);
 	if (status)
 		return status;
 
@@ -40,13 +38,9 @@ int hcd1080_get_temperature_C_accum(hcd1080_t *hcd1080, accum *result) {
 			false);
 	if (status)
 		return status;
-	for (int i = 0; i < 3; i++) {
-		status = bshal_i2cm_recv(hcd1080->p_i2c, hcd1080->addr, &value,
-				sizeof(value), false);
-		if (!status)
-			break;
-		bshal_delay_ms(10);
-	}
+	bshal_delay_ms(7);
+	status = bshal_i2cm_recv(hcd1080->p_i2c, hcd1080->addr, &value,
+			sizeof(value), false);
 	if (status)
 		return status;
 
@@ -57,20 +51,16 @@ int hcd1080_get_temperature_C_accum(hcd1080_t *hcd1080, accum *result) {
 #endif
 int hcd1080_get_humidity_float(hcd1080_t *hcd1080, float *result) {
 	uint8_t cmd = HCD1080_REG_HUMIDITY;
-	int16_t value;
+	uint16_t value;
 
 	int status;
 	status = bshal_i2cm_send(hcd1080->p_i2c, hcd1080->addr, &cmd, sizeof(cmd),
 			false);
 	if (status)
 		return status;
-	for (int i = 0; i < 3; i++) {
-		status = bshal_i2cm_recv(hcd1080->p_i2c, hcd1080->addr, &value,
-				sizeof(value), false);
-		if (!status)
-			break;
-		bshal_delay_ms(10);
-	}
+	bshal_delay_ms(15);
+	status = bshal_i2cm_recv(hcd1080->p_i2c, hcd1080->addr, &value,
+			sizeof(value), false);
 	if (status)
 		return status;
 
@@ -87,13 +77,9 @@ int hcd1080_get_humidity_accum(hcd1080_t *hcd1080, accum *result) {
 			false);
 	if (status)
 		return status;
-	for (int i = 0; i < 3; i++) {
-		status = bshal_i2cm_recv(hcd1080->p_i2c, hcd1080->addr, &value,
-				sizeof(value), false);
-		if (!status)
-			break;
-		bshal_delay_ms(10);
-	}
+	bshal_delay_ms(7);
+	status = bshal_i2cm_recv(hcd1080->p_i2c, hcd1080->addr, &value,
+			sizeof(value), false);
 	if (status)
 		return status;
 
@@ -102,12 +88,25 @@ int hcd1080_get_humidity_accum(hcd1080_t *hcd1080, accum *result) {
 	return status;
 }
 #endif
-int hcd1080_identify(hcd1080_t *hcd1080, bool *is_hcd1080) {
-	uint8_t cmd = HCD1080_REG_MANUFACTURER_ID;
-	uint16_t manuf, device;
+int hcd1080_init(hcd1080_t *hcd1080) {
 	int status;
-	*is_hcd1080 = false;
+	uint8_t cmd_reset = {HCD1080_REG_CONFIGURATION, 0x80, 0x00};
+	status = bshal_i2cm_send(hcd1080->p_i2c, hcd1080->addr, &cmd_reset, sizeof(cmd_reset),
+			false);
+	if (status)
+		return status;
+	bshal_delay_ms(15);
 
+
+	uint8_t cmd_init = {HCD1080_REG_CONFIGURATION, 0x10, 0x00};
+	status = bshal_i2cm_send(hcd1080->p_i2c, hcd1080->addr, &cmd_init, sizeof(cmd_init),
+			false);
+	if (status)
+		return status;
+
+
+	uint16_t manuf, device;
+	uint8_t cmd = HCD1080_REG_MANUFACTURER_ID;
 	status = bshal_i2cm_send(hcd1080->p_i2c, hcd1080->addr, &cmd, sizeof(cmd),
 			false);
 	if (status)
@@ -118,21 +117,18 @@ int hcd1080_identify(hcd1080_t *hcd1080, bool *is_hcd1080) {
 	if (status)
 		return status;
 
-//	cmd = HCD1080_REG_DEVICE_IO;
-//	status = bshal_i2cm_send(hcd1080->p_i2c, hcd1080->addr, &cmd, sizeof(cmd),
-//			false);
-//	if (status)
-//		return status;
-//	status = bshal_i2cm_recv(hcd1080->p_i2c, hcd1080->addr, &device,
-//			sizeof(device), false);
-//	if (status)
-//		return status;
-//
-//	*is_hcd1080 = be16toh(device) == HCD1080_VAL_DEVICE_IO
-//			&& be16toh(manuf) == HCD1080_VAL_MANUFACTURER_ID;
+	cmd = HCD1080_REG_DEVICE_IO;
+	status = bshal_i2cm_send(hcd1080->p_i2c, hcd1080->addr, &cmd, sizeof(cmd),
+			false);
+	if (status)
+		return status;
+	bshal_delay_ms(1);
+	status = bshal_i2cm_recv(hcd1080->p_i2c, hcd1080->addr, &device,
+			sizeof(device), false);
+	if (status)
+		return status;
 
+	return !(be16toh(device) == HCD1080_VAL_DEVICE_IO
+			&& be16toh(manuf) == HCD1080_VAL_MANUFACTURER_ID);
 
-	// On MH32F103 reading DEVICE_IO register fails???
-	*is_hcd1080 = be16toh(manuf) == HCD1080_VAL_MANUFACTURER_ID;
-	return status;
 }

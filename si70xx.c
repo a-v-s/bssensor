@@ -8,6 +8,7 @@
 #include "si70xx.h"
 #include "endian.h"
 
+#include <bshal_delay.h>
 
 int si70xx_get_temperature_C_float(si70xx_t* si70xx, float * result){
 	uint8_t cmd[] = {0xe3};
@@ -16,6 +17,7 @@ int si70xx_get_temperature_C_float(si70xx_t* si70xx, float * result){
 	int status;
 	status = bshal_i2cm_send(si70xx->p_i2c, si70xx->addr, &cmd, sizeof(cmd), false);
 	if (status) return status;
+	bshal_delay_ms(15);
 	status = bshal_i2cm_recv(si70xx->p_i2c, si70xx->addr, &value, sizeof(value), false);
 	if (status) return status;
 
@@ -31,6 +33,7 @@ int si70xx_get_temperature_C_accum(si70xx_t* si70xx, accum * result){
 	int status;
 	status = bshal_i2cm_send(si70xx->p_i2c, si70xx->addr, &cmd, sizeof(cmd), false);
 	if (status) return status;
+	bshal_delay_ms(15);
 	status = bshal_i2cm_recv(si70xx->p_i2c, si70xx->addr, &value, sizeof(value), false);
 	if (status) return status;
 
@@ -47,6 +50,7 @@ int si70xx_get_humidity_float(si70xx_t* si70xx, float * result){
 	int status;
 	status = bshal_i2cm_send(si70xx->p_i2c, si70xx->addr, &cmd, sizeof(cmd), false);
 	if (status) return status;
+	bshal_delay_ms(15);
 	status = bshal_i2cm_recv(si70xx->p_i2c, si70xx->addr, &value, sizeof(value), false);
 	if (status) return status;
 
@@ -62,6 +66,7 @@ int si70xx_get_humidity_accum(si70xx_t* si70xx, accum * result){
 	int status;
 	status = bshal_i2cm_send(si70xx->p_i2c, si70xx->addr, &cmd, sizeof(cmd), false);
 	if (status) return status;
+	bshal_delay_ms(15);
 	status = bshal_i2cm_recv(si70xx->p_i2c, si70xx->addr, &value, sizeof(value), false);
 	if (status) return status;
 
@@ -71,13 +76,19 @@ int si70xx_get_humidity_accum(si70xx_t* si70xx, accum * result){
 }
 #endif
 
-int si70xx_identify(si70xx_t *hcd1080, bool *is_si70xx) {
-	uint8_t cmd[] = { 0xFC, 0xc9 };
+int si70xx_init(si70xx_t *hcd1080) {
+	uint8_t cmd_reset[] = {0xFE};
+	uint8_t cmd_get_dev_id[] = { 0xFC, 0xc9 };
 	uint8_t dev_id;
 	int status;
-	*is_si70xx = false;
 
-	status = bshal_i2cm_send(hcd1080->p_i2c, hcd1080->addr, &cmd, sizeof(cmd),
+	status = bshal_i2cm_send(hcd1080->p_i2c, hcd1080->addr, &cmd_reset, sizeof(cmd_reset),
+				false);
+	if (status)
+		return status;
+	bshal_delay_ms(15);
+
+	status = bshal_i2cm_send(hcd1080->p_i2c, hcd1080->addr, &cmd_get_dev_id, sizeof(cmd_get_dev_id),
 			false);
 	if (status)
 		return status;
@@ -86,7 +97,7 @@ int si70xx_identify(si70xx_t *hcd1080, bool *is_si70xx) {
 	if (status)
 		return status;
 
-	*is_si70xx = dev_id == SI7013_DEV_ID || dev_id == SI7020_DEV_ID
-			|| dev_id == SI7021_DEV_ID;
+	return  !(dev_id == SI7013_DEV_ID || dev_id == SI7020_DEV_ID
+			|| dev_id == SI7021_DEV_ID);
 	return status;
 }
