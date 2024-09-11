@@ -43,6 +43,7 @@
 #define LM75B_REG_CONF	(0x01)
 #define LM75B_REG_THYST	(0x02)
 #define LM75B_REG_TOS	(0x03)
+#define TMP1075_REG_DIE	(0x0F)
 
 
 typedef struct {
@@ -56,5 +57,6 @@ int lm75b_get_temperature_C_float(lm75b_t* lm75b, float*);
 int lm75b_get_temperature_C_accum(lm75b_t* lm75b, accum*);
 #endif
 
+uint16_t lm75b_get_die_id(lm75b_t *lm75b, uint16_t* die_id);
 
 #endif /* LM75B_H_ */

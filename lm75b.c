@@ -7,7 +7,7 @@
 
  MIT License
 
- Copyright (c) 2021  André van Schoubroeck <andre@blaatschaap.be>
+ Copyright (c) 2021-2024  André van Schoubroeck <andre@blaatschaap.be>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,14 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 
+ */
+
+/*
+ * 	This implements the LM75B I²C Temperature sensor, made by various
+ * 	companies, such as Analog Devices, NXP, TI, UMW, and others.
+ * 	As well as compatible devices such as the TITMP 175 and TMP1075.
+ *
+ *
  */
 
 #include <stdint.h>
@@ -114,3 +122,22 @@ int lm75b_get_temperature_C_accum(lm75b_t *lm75b, accum *result) {
 	return status;
 }
 #endif
+
+uint16_t lm75b_get_die_id(lm75b_t *lm75b, uint16_t* die_id){
+	uint8_t reg = TMP1075_REG_DIE;
+	int16_t value;
+
+	int status;
+	status = bshal_i2cm_send(lm75b->p_i2c, lm75b->addr, &reg, sizeof(reg),
+			false);
+	if (status)
+		return status;
+	status = bshal_i2cm_recv(lm75b->p_i2c, lm75b->addr, &value, sizeof(value),
+			false);
+	if (status)
+		return status;
+
+	// Incoming value is Big Endian
+	*die_id = be16toh(value);
+	return status;
+}
