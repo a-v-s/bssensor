@@ -54,7 +54,7 @@ typedef struct {
 int lm75b_get_temperature_C_float(lm75b_t* lm75b, float*);
 
 #ifdef __ACCUM_FBIT__
-int lm75b_get_temperature_C_accum(lm75b_t* lm75b, accum*);
+int lm75b_get_temperature_C_accum(lm75b_t* lm75b, short accum*);
 #endif
 
 uint16_t lm75b_get_die_id(lm75b_t *lm75b, uint16_t* die_id);

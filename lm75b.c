@@ -97,7 +97,7 @@ int lm75b_get_temperature_C_float(lm75b_t *lm75b, float *result) {
 }
 
 #ifdef __ACCUM_FBIT__
-int lm75b_get_temperature_C_accum(lm75b_t *lm75b, accum *result) {
+int lm75b_get_temperature_C_accum(lm75b_t *lm75b, short accum *result) {
 	uint8_t reg = LM75B_REG_TEMP;
 	int16_t value;
 

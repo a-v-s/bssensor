@@ -33,9 +33,9 @@
 #include "endian.h"
 #include "bshal_i2cm.h"
 
-uint32_t be24toh(uint32_t in) {
-
-}
+//uint32_t be24toh(uint32_t in) {
+//
+//}
 
 #ifdef __ACCUM_FBIT__
 // Based on the BMP280 datasheet Appendix 1.
@@ -175,26 +175,29 @@ int bmp280_measure_a(bmp280_t* bmp280, accum *temperature, long accum *pressure)
 	bmp280_trimming_t trimming;
 	bmp280_measurement_t measurement;
 
-	bshal_i2cm_recv_reg(bmp280->p_i2c, bmp280->addr, BMP280_REG_TRIM,
+	int result = bshal_i2cm_recv_reg(bmp280->p_i2c, bmp280->addr, BMP280_REG_TRIM,
 			&trimming, sizeof(trimming) );
 
-	bshal_i2cm_recv_reg(bmp280->p_i2c, bmp280->addr, BMP280_REG_MEAS,
+	if (result) return result;
+	result = bshal_i2cm_recv_reg(bmp280->p_i2c, bmp280->addr, BMP280_REG_MEAS,
 			&measurement, sizeof(measurement) );
 
 	bmp280_compensate_a(&trimming, &measurement, temperature, pressure);
+	return result;
 }
 #endif
 int bmp280_measure_f(bmp280_t *bmp280, float *temperature, float *pressure) {
 	bmp280_trimming_t trimming;
 	bmp280_measurement_t measurement;
 
-	bshal_i2cm_recv_reg(bmp280->p_i2c, bmp280->addr, BMP280_REG_TRIM, &trimming,
+	int result = bshal_i2cm_recv_reg(bmp280->p_i2c, bmp280->addr, BMP280_REG_TRIM, &trimming,
 			sizeof(trimming));
-
+	if (result) return result;
 	bshal_i2cm_recv_reg(bmp280->p_i2c, bmp280->addr, BMP280_REG_MEAS,
 			&measurement, sizeof(measurement));
 
 	bmp280_compensate_f(&trimming, &measurement, temperature, pressure);
+	return result;
 }
 
 int bmp280_init(bmp280_t *bmp280) {

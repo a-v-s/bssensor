@@ -90,7 +90,7 @@ int hcd1080_get_humidity_accum(hcd1080_t *hcd1080, accum *result) {
 #endif
 int hcd1080_init(hcd1080_t *hcd1080) {
 	int status;
-	uint8_t cmd_reset = {HCD1080_REG_CONFIGURATION, 0x80, 0x00};
+	uint8_t cmd_reset[] = {HCD1080_REG_CONFIGURATION, 0x80, 0x00};
 	status = bshal_i2cm_send(hcd1080->p_i2c, hcd1080->addr, &cmd_reset, sizeof(cmd_reset),
 			false);
 	if (status)
@@ -98,7 +98,7 @@ int hcd1080_init(hcd1080_t *hcd1080) {
 	bshal_delay_ms(15);
 
 
-	uint8_t cmd_init = {HCD1080_REG_CONFIGURATION, 0x10, 0x00};
+	uint8_t cmd_init[] = {HCD1080_REG_CONFIGURATION, 0x10, 0x00};
 	status = bshal_i2cm_send(hcd1080->p_i2c, hcd1080->addr, &cmd_init, sizeof(cmd_init),
 			false);
 	if (status)
