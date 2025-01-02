@@ -1,13 +1,13 @@
 /*
 
  File: 		bmp280.h
- Author:	André van Schoubroeck
+ Author:	André van Schoubroeck  <andre@blaatschaap.be>
  License:	MIT
 
 
  MIT License
 
- Copyright (c) 2021  André van Schoubroeck <andre@blaatschaap.be>
+ Copyright (c) 2021 - 2025  André van Schoubroeck <andre@blaatschaap.be>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -34,49 +34,48 @@
 
 #include <stdint.h>
 
-#pragma pack (push,1)
+#pragma pack(push, 1)
 
 typedef struct {
-	uint16_t t1;
-	int16_t	t2;
-	int16_t t3;
-	uint16_t p1;
-	int16_t p2;
-	int16_t p3;
-	int16_t p4;
-	int16_t p5;
-	int16_t p6;
-	int16_t p7;
-	int16_t p8;
-	int16_t p9;
+    uint16_t t1;
+    int16_t t2;
+    int16_t t3;
+    uint16_t p1;
+    int16_t p2;
+    int16_t p3;
+    int16_t p4;
+    int16_t p5;
+    int16_t p6;
+    int16_t p7;
+    int16_t p8;
+    int16_t p9;
 } bmp280_trimming_t;
 
 typedef struct {
-	union {
-		unsigned int be :24;
-		uint8_t raw[3];
-	} up;
-	union {
-		unsigned int be :24;
-		uint8_t raw[3];
-	} ut;
+    union {
+        unsigned int be : 24;
+        uint8_t raw[3];
+    } up;
+    union {
+        unsigned int be : 24;
+        uint8_t raw[3];
+    } ut;
 } bmp280_measurement_t;
 
 typedef struct {
-	bshal_i2cm_instance_t * p_i2c;
-	uint8_t addr;
+    bshal_i2cm_instance_t *p_i2c;
+    uint8_t addr;
 } bmp280_t;
 
 #pragma pack(pop)
 
-#define BMP280_REG_TRIM	(0x88)
-#define BMP280_REG_MEAS	(0xF7)
+#define BMP280_REG_TRIM (0x88)
+#define BMP280_REG_MEAS (0xF7)
 
 #define BMP280_I2C_ADDR1 (0x76)
 #define BMP280_I2C_ADDR2 (0x77)
 #define BMP280_I2C_ADDR BMP280_I2C_ADDR1
 
-
-int bmp280_measure_f(bmp280_t *bmp280, float *temperature, float *pressure) ;
+int bmp280_measure_f(bmp280_t *bmp280, float *temperature, float *pressure);
 int bmp280_init(bmp280_t *bmp280);
 #endif // __BMP_280_H__

@@ -1,13 +1,13 @@
 /*
 
  File: 		as3935.c
- Author:	André van Schoubroeck
+ Author:	André van Schoubroeck  <andre@blaatschaap.be>
  License:	MIT
 
 
  MIT License
 
- Copyright (c) 2023 - 2024  André van Schoubroeck <andre@blaatschaap.be>
+ Copyright (c) 2023 - 2025  André van Schoubroeck <andre@blaatschaap.be>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -30,20 +30,20 @@
 
 #include "as3935.h"
 
-
-int as3935_set_wdth(as3935_t*as3935, uint8_t wdth){
-	int result;
-	as3925_reg1_t r1;
-	result =  bshal_i2cm_recv_reg(as3935->p_i2c, as3935->addr , AS3935_REG1, &r1, 1);
-	if (result) return result;
-	r1.wdth = wdth;
-	result =  bshal_i2cm_send_reg(as3935->p_i2c, as3935->addr , AS3935_REG1, &r1, 1);
-	return result;
+int as3935_set_wdth(as3935_t *as3935, uint8_t wdth) {
+    int result;
+    as3925_reg1_t r1;
+    result = bshal_i2cm_recv_reg(as3935->p_i2c, as3935->addr, AS3935_REG1, &r1, 1);
+    if (result)
+        return result;
+    r1.wdth = wdth;
+    result = bshal_i2cm_send_reg(as3935->p_i2c, as3935->addr, AS3935_REG1, &r1, 1);
+    return result;
 }
 
-int as3935_get_distance(as3935_t*as3935, uint8_t*distance_km){
-	as3925_reg7_t r7;
-	int result =  bshal_i2cm_recv_reg(as3935->p_i2c, as3935->addr , AS3935_REG7, &r7, 1);
-	*distance_km = r7.distance;
-	return result;
+int as3935_get_distance(as3935_t *as3935, uint8_t *distance_km) {
+    as3925_reg7_t r7;
+    int result = bshal_i2cm_recv_reg(as3935->p_i2c, as3935->addr, AS3935_REG7, &r7, 1);
+    *distance_km = r7.distance;
+    return result;
 }

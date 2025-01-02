@@ -1,13 +1,13 @@
 /*
 
  File: 		ahl10.c
- Author:	André van Schoubroeck
+ Author:	André van Schoubroeck <andre@blaatschaap.be>
  License:	MIT
 
 
  MIT License
 
- Copyright (c) 2024  André van Schoubroeck <andre@blaatschaap.be>
+ Copyright (c) 2024-2025  André van Schoubroeck <andre@blaatschaap.be>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -38,72 +38,61 @@
 #include <endian.h>
 
 int aht10_init(aht10_t *aht10) {
-	char cmd = AHT10_CMD_INIT;
-	int status;
-	status = bshal_i2cm_send(aht10->p_i2c, aht10->addr, &cmd, sizeof(cmd),
-			false);
-	return status;
+    char cmd = AHT10_CMD_INIT;
+    int status;
+    status = bshal_i2cm_send(aht10->p_i2c, aht10->addr, &cmd, sizeof(cmd), false);
+    return status;
 }
 
 int aht10_get_temperature_C_float(aht10_t *aht10, float *result) {
 
-	aht10_value_t value;
-	char cmd = AHT10_CMD_MEASURE;
-	int status;
-	status = bshal_i2cm_send(aht10->p_i2c, aht10->addr, &cmd, sizeof(cmd),
-			false);
-	if (status)
-		return status;
+    aht10_value_t value;
+    char cmd = AHT10_CMD_MEASURE;
+    int status;
+    status = bshal_i2cm_send(aht10->p_i2c, aht10->addr, &cmd, sizeof(cmd), false);
+    if (status)
+        return status;
 
-// 	Waiting for the data to be ready, can take a while, or read old data istead?
-//	value.busy= 1;
-//	while (value.busy) {
-//		status = bshal_i2cm_recv(aht10->p_i2c, aht10->addr, &value, sizeof(value), false);
-//		if (status) return status;
-//	}
-	status = bshal_i2cm_recv(aht10->p_i2c, aht10->addr, &value, sizeof(value),
-			false);
-	if (status)
-		return status;
+    // 	Waiting for the data to be ready, can take a while, or read old data istead?
+    //	value.busy= 1;
+    //	while (value.busy) {
+    //		status = bshal_i2cm_recv(aht10->p_i2c, aht10->addr, &value, sizeof(value), false);
+    //		if (status) return status;
+    //	}
+    status = bshal_i2cm_recv(aht10->p_i2c, aht10->addr, &value, sizeof(value), false);
+    if (status)
+        return status;
 
-	// Big endian data, can't use bitfields as those will take the wrong nibble
-	// of the shared byte in the middle
-	uint32_t hum_raw = ((value.data[0]) << 12) | (value.data[1] << 4)
-			| (value.data[2] >> 4);
-	uint32_t temp_raw = ((value.data[2] << 16) | (value.data[3] << 8)
-			| value.data[4]) & 0xFFFFF;
-	*result = (((float) (temp_raw) / (float) (1 << 20)) * 200.0f) - 50;
-	return status;
-
+    // Big endian data, can't use bitfields as those will take the wrong nibble
+    // of the shared byte in the middle
+    uint32_t hum_raw = ((value.data[0]) << 12) | (value.data[1] << 4) | (value.data[2] >> 4);
+    uint32_t temp_raw = ((value.data[2] << 16) | (value.data[3] << 8) | value.data[4]) & 0xFFFFF;
+    *result = (((float)(temp_raw) / (float)(1 << 20)) * 200.0f) - 50;
+    return status;
 }
 
 int aht10_get_humidity_float(aht10_t *aht10, float *result) {
-	aht10_value_t value;
-	char cmd = AHT10_CMD_MEASURE;
-	int status;
-	status = bshal_i2cm_send(aht10->p_i2c, aht10->addr, &cmd, sizeof(cmd),
-			false);
-	if (status)
-		return status;
+    aht10_value_t value;
+    char cmd = AHT10_CMD_MEASURE;
+    int status;
+    status = bshal_i2cm_send(aht10->p_i2c, aht10->addr, &cmd, sizeof(cmd), false);
+    if (status)
+        return status;
 
-// Waiting for the data to be ready, can take a while, or read old data istead?
-//	value.busy= 1;
-//	while (value.busy) {
-//		status = bshal_i2cm_recv(aht10->p_i2c, aht10->addr, &value, sizeof(value), false);
-//		if (status) return status;
-//	}
-	status = bshal_i2cm_recv(aht10->p_i2c, aht10->addr, &value, sizeof(value),
-			false);
-	if (status)
-		return status;
+    // Waiting for the data to be ready, can take a while, or read old data istead?
+    //	value.busy= 1;
+    //	while (value.busy) {
+    //		status = bshal_i2cm_recv(aht10->p_i2c, aht10->addr, &value, sizeof(value), false);
+    //		if (status) return status;
+    //	}
+    status = bshal_i2cm_recv(aht10->p_i2c, aht10->addr, &value, sizeof(value), false);
+    if (status)
+        return status;
 
-	// Big endian data, can't use bitfields as those will take the wrong nibble
-	// of the shared byte in the middle
-	uint32_t hum_raw = ((value.data[0]) << 12) | (value.data[1] << 4)
-			| (value.data[2] >> 4);
-	uint32_t temp_raw = ((value.data[2] << 16) | (value.data[3] << 8)
-			| value.data[4]) & 0xFFFFF;
-	*result = (((float) (hum_raw) / (float) (1 << 20)) * 100.0f);
-	return status;
+    // Big endian data, can't use bitfields as those will take the wrong nibble
+    // of the shared byte in the middle
+    uint32_t hum_raw = ((value.data[0]) << 12) | (value.data[1] << 4) | (value.data[2] >> 4);
+    uint32_t temp_raw = ((value.data[2] << 16) | (value.data[3] << 8) | value.data[4]) & 0xFFFFF;
+    *result = (((float)(hum_raw) / (float)(1 << 20)) * 100.0f);
+    return status;
 }
-

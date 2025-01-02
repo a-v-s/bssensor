@@ -1,13 +1,13 @@
 /*
 
  File: 		adxl345.c
- Author:	André van Schoubroeck
+ Author:	André van Schoubroeck <andre@blaatschaap.be>
  License:	MIT
 
 
  MIT License
 
- Copyright (c) 2022  André van Schoubroeck <andre@blaatschaap.be>
+ Copyright (c) 2022-2025  André van Schoubroeck <andre@blaatschaap.be>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -28,24 +28,21 @@
 
  */
 
-
 #include "adxl345.h"
 
-
-int adxl345_init(adxl345_instance_t * instance){
-	if (!instance) return -1;
-	switch (instance->transport_type) {
-	case bshal_transport_i2c:
-		instance->read = (adxl_access_register_f)(bshal_i2cm_recv_reg);
-		instance->write = (adxl_access_register_f)(bshal_i2cm_send_reg);
-		break;
-	case bshal_transport_spi:
-		instance->read = (adxl_access_register_f)(adxl345_spim_recv_reg);
-		instance->write = (adxl_access_register_f)(adxl345_spim_send_reg);
-		break;
-	default:
-		return -2;
-	}
-
-
+int adxl345_init(adxl345_instance_t *instance) {
+    if (!instance)
+        return -1;
+    switch (instance->transport_type) {
+    case bshal_transport_i2c:
+        instance->read = (adxl_access_register_f)(bshal_i2cm_recv_reg);
+        instance->write = (adxl_access_register_f)(bshal_i2cm_send_reg);
+        break;
+    case bshal_transport_spi:
+        instance->read = (adxl_access_register_f)(adxl345_spim_recv_reg);
+        instance->write = (adxl_access_register_f)(adxl345_spim_send_reg);
+        break;
+    default:
+        return -2;
+    }
 }
