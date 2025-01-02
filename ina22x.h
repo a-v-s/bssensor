@@ -30,8 +30,8 @@
  */
 #pragma once
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "bshal_i2cm.h"
 
@@ -77,72 +77,70 @@ typedef union {
     } ina226;
 } ina22x_reg_control_t;
 
-
 typedef union {
     uint16_t as_uint16;
-	struct {
-		signed int shunt_voltage: 16;
-	};
+    struct {
+        signed int shunt_voltage : 16;
+    };
 } ina220_reg_shunt_voltage_t;
 
 typedef enum ina220_reg_shunt_voltage_t ina226_reg_shunt_voltage_t;
 
 typedef union {
     uint16_t as_uint16;
-	struct {
-		unsigned int math_overflow:1;
-		unsigned int conversion_ready_flag:1;
-		unsigned int : 1;
-		unsigned int bus_voltage: 12;
-	};
+    struct {
+        unsigned int math_overflow : 1;
+        unsigned int conversion_ready_flag : 1;
+        unsigned int : 1;
+        unsigned int bus_voltage : 12;
+    };
 } ina220_reg_bus_voltage_t;
 
 typedef union {
     uint16_t as_uint16;
-	struct {
-		unsigned int bus_voltage: 15;
-	};
+    struct {
+        unsigned int bus_voltage : 15;
+    };
 } ina226_reg_bus_voltage_t;
-
 
 typedef union {
     uint16_t as_uint16;
-	struct {
-    	unsigned int : 3;
-		unsigned int bus_voltage: 13;
-	};
+    struct {
+        unsigned int : 3;
+        unsigned int bus_voltage : 13;
+    };
 } ina3221_reg_bus_voltage_t;
 typedef union {
     uint16_t as_uint16;
-	struct {
-		unsigned int alert_latch_enable : 1; // 0
-		unsigned int alert_polarity : 1;     // 1
-		unsigned int math_overflow:1;        // 2
-		unsigned int conversion_ready_flag:1;     // 3
-		unsigned int alert_function:1;       // 4
-		unsigned int : 5;
-		unsigned int alert_conversion_ready_flag:1; // 10
-		unsigned int alert_power_limit:1; // 11
-		unsigned int alert_bus_under_voltage:1; // 12
-		unsigned int alert_bus_over_voltage:1;  // 13
-		unsigned int alert_shunt_under_voltage:1; // 14
-		unsigned int alert_shunt_over_voltage:1;  // 15
-	};
+    struct {
+        unsigned int alert_latch_enable : 1;    // 0
+        unsigned int alert_polarity : 1;        // 1
+        unsigned int math_overflow : 1;         // 2
+        unsigned int conversion_ready_flag : 1; // 3
+        unsigned int alert_function : 1;        // 4
+        unsigned int : 5;
+        unsigned int alert_conversion_ready_flag : 1; // 10
+        unsigned int alert_power_limit : 1;           // 11
+        unsigned int alert_bus_under_voltage : 1;     // 12
+        unsigned int alert_bus_over_voltage : 1;      // 13
+        unsigned int alert_shunt_under_voltage : 1;   // 14
+        unsigned int alert_shunt_over_voltage : 1;    // 15
+    };
 } ina226_reg_mask_enable_t;
 
 typedef union {
     uint16_t as_uint16;
-	struct {
-		unsigned int conversion_ready_flag:1;     // 0
-		unsigned int tcf : 1;
-		unsigned int pvf : 1;
-		unsigned int wf : 3;
-		unsigned int sf : 1;
-		unsigned int cf : 3;
-		unsigned int cen : 1;
-		unsigned int wen : 1;
-		unsigned int scc : 3;
-	};
+    struct {
+        unsigned int conversion_ready_flag : 1; // 0
+        unsigned int tcf : 1;
+        unsigned int pvf : 1;
+        unsigned int wf : 3;
+        unsigned int sf : 1;
+        unsigned int cf : 3;
+        unsigned int cen : 1;
+        unsigned int wen : 1;
+        unsigned int scc : 3;
+    };
 } ina3221_reg_mask_enable_t;
 
 #pragma pack(pop)
@@ -159,17 +157,17 @@ typedef union {
 #define INA22X_VAL_DIE_226 0x2260
 #define INA22X_VAL_DIE_3221 0x3220
 
-#define INA220_REG_SHUNT_VOLTAGE	0x01
-#define INA220_REG_BUS_VOLTAGE	0x02
-#define INA220_REG_POWER	0x03
-#define INA220_REG_CURRENT	0x04
-#define INA220_REG_CALIBRATION	0x05
+#define INA220_REG_SHUNT_VOLTAGE 0x01
+#define INA220_REG_BUS_VOLTAGE 0x02
+#define INA220_REG_POWER 0x03
+#define INA220_REG_CURRENT 0x04
+#define INA220_REG_CALIBRATION 0x05
 
-#define INA226_REG_SHUNT_VOLTAGE	0x01
-#define INA226_REG_BUS_VOLTAGE	0x02
-#define INA226_REG_POWER	0x03
-#define INA226_REG_CURRENT	0x04
-#define INA226_REG_CALIBRATION	0x05
+#define INA226_REG_SHUNT_VOLTAGE 0x01
+#define INA226_REG_BUS_VOLTAGE 0x02
+#define INA226_REG_POWER 0x03
+#define INA226_REG_CURRENT 0x04
+#define INA226_REG_CALIBRATION 0x05
 #define INA226_REG_MASK_ENABLE 0x06
 
 #define INA3221_REG_CH1_BUS_VOLTAGE 0x02
@@ -178,8 +176,8 @@ typedef union {
 #define INA3221_REG_MASK_ENABLE 0x0F
 
 int ina22x_init(ina22x_t *ina22x);
-int ina22x_reg_read(ina22x_t *ina22x, uint8_t reg, uint16_t* val);
+int ina22x_reg_read(ina22x_t *ina22x, uint8_t reg, uint16_t *val);
 int ina22x_reg_write(ina22x_t *ina22x, uint8_t reg, uint16_t val);
-int ina22x_conversion_ready(ina22x_t *ina22x, bool* ready);
+int ina22x_conversion_ready(ina22x_t *ina22x, bool *ready);
 
-int ina22x_bus_voltage_float(ina22x_t *ina22x, float* voltage, unsigned channel);
+int ina22x_bus_voltage_float(ina22x_t *ina22x, float *voltage, unsigned channel);
