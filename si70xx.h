@@ -41,8 +41,8 @@
 #include "bshal_i2cm.h"
 
 typedef struct {
-    bshal_i2cm_instance_t *p_i2c;
-    uint8_t addr;
+	bshal_i2cm_instance_t *p_i2c;
+	uint8_t addr;
 } si70xx_t;
 
 #define SI7013_DEV_ID 0x0D
@@ -53,7 +53,7 @@ int si70xx_init(si70xx_t *hcd1080);
 
 int si70xx_get_temperature_C_float(si70xx_t *si70xx, float *result);
 int si70xx_get_humidity_float(si70xx_t *si70xx, float *result);
-int si70xx_identify(si70xx_t *si70xx, bool *result);
+
 #ifdef __ACCUM_FBIT__
 int si70xx_get_temperature_C_accum(si70xx_t *si70xx, accum *result);
 int si70xx_get_humidity_accum(si70xx_t *si70xx, accum *result);

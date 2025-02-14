@@ -51,16 +51,16 @@
 #define SHT4X_I2C_ADDR 0x44
 
 typedef struct {
-    bshal_i2cm_instance_t *p_i2c;
-    uint8_t addr;
+	bshal_i2cm_instance_t *p_i2c;
+	uint8_t addr;
 } sht4x_t;
 
 #pragma pack(push, 1)
 typedef struct {
-    int16_t temperature;
-    uint8_t temp_crc;
-    int16_t humidity;
-    uint8_t humi_crc;
+	int16_t temperature;
+	uint8_t temp_crc;
+	int16_t humidity;
+	uint8_t humi_crc;
 } sht4x_value_t;
 
 int sht4x_init(sht4x_t *sht4x);

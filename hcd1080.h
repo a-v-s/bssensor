@@ -28,7 +28,6 @@
 
  */
 
-
 #ifndef HCD1080_H_
 #define HCD1080_H_
 
@@ -40,8 +39,8 @@
 #include "bshal_i2cm.h"
 
 typedef struct {
-    bshal_i2cm_instance_t *p_i2c;
-    uint8_t addr;
+	bshal_i2cm_instance_t *p_i2c;
+	uint8_t addr;
 } hcd1080_t;
 
 #define HCD1080_REG_TEMPERATURE (0x00)
@@ -58,6 +57,7 @@ typedef struct {
 
 int hcd1080_get_temperature_C_float(hcd1080_t *hcd1080, float *result);
 int hcd1080_get_humidity_float(hcd1080_t *hcd1080, float *result);
+int hcd1080_init(hcd1080_t *hcd1080);
 
 #ifdef __ACCUM_FBIT__
 int hcd1080_get_temperature_C_accum(hcd1080_t *hcd1080, accum *result);

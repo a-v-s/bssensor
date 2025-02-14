@@ -96,7 +96,8 @@ int scd4x_get_serial(scd4x_t *scd4x, char *serial) {
     return 0;
 }
 
-int scd4x_get_result_float(scd4x_t *scd4x, uint16_t *co2_ppm, float *temp_C, float *humidity_percent) {
+int scd4x_get_result_float(scd4x_t *scd4x, uint16_t *co2_ppm, float *temp_C,
+		float *humidity_percent) {
     int status;
     scd4x_result_t result = {0};
     uint16_t cmd;
