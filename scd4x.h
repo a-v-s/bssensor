@@ -37,18 +37,18 @@
 #define SCD4X_I2C_ADDR 0x62
 
 typedef struct {
-    bshal_i2cm_instance_t *p_i2c;
-    uint8_t addr;
+	bshal_i2cm_instance_t *p_i2c;
+	uint8_t addr;
 } scd4x_t;
 
 #pragma pack(push, 1)
 typedef struct {
-    int16_t co2;
-    uint8_t co2_crc;
-    int16_t temperature;
-    uint8_t temp_crc;
-    int16_t humidity;
-    uint8_t humi_crc;
+	int16_t co2;
+	uint8_t co2_crc;
+	int16_t temperature;
+	uint8_t temp_crc;
+	int16_t humidity;
+	uint8_t humi_crc;
 } scd4x_result_t;
 #pragma pack(pop)
 
@@ -80,7 +80,12 @@ typedef struct {
 #define SCD4X_CMD_POWER_DOWN htobe16(0x36E0)
 #define SCD4X_CMD_WAKE_UP htobe16(0x36F6)
 
-int scd4x_get_result_float(scd4x_t *scd4x, uint16_t *co2_ppm, float *temp_C, float *humidity_percent);
 int scd4x_start(scd4x_t *scd4x);
+int scd4x_selftest(scd4x_t *scd4x);
+int scd4x_factory_reset(scd4x_t *scd4x);
+int scd4x_get_serial(scd4x_t *scd4x, char *serial);
+int scd4x_get_result_float(scd4x_t *scd4x, uint16_t *co2_ppm, float *temp_C,
+		float *humidity_percent);
+
 
 #endif /* SCD4X_H_ */

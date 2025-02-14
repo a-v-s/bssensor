@@ -51,6 +51,7 @@ typedef struct {
     bshal_i2cm_instance_t *p_i2c;
     uint8_t addr;
     ina22x_variant_t variant;
+    uint16_t  shurt_resistance_mΩ;
 } ina22x_t;
 
 #pragma pack(push, 1)
@@ -170,8 +171,13 @@ typedef union {
 #define INA226_REG_CALIBRATION 0x05
 #define INA226_REG_MASK_ENABLE 0x06
 
+
+
+#define INA3221_REG_CH1_SHUNT_VOLTAGE 0x01
 #define INA3221_REG_CH1_BUS_VOLTAGE 0x02
+#define INA3221_REG_CH2_SHUNT_VOLTAGE 0x03
 #define INA3221_REG_CH2_BUS_VOLTAGE 0x04
+#define INA3221_REG_CH3_SHUNT_VOLTAGE 0x05
 #define INA3221_REG_CH3_BUS_VOLTAGE 0x06
 #define INA3221_REG_MASK_ENABLE 0x0F
 
@@ -180,4 +186,5 @@ int ina22x_reg_read(ina22x_t *ina22x, uint8_t reg, uint16_t *val);
 int ina22x_reg_write(ina22x_t *ina22x, uint8_t reg, uint16_t val);
 int ina22x_conversion_ready(ina22x_t *ina22x, bool *ready);
 
-int ina22x_bus_voltage_float(ina22x_t *ina22x, float *voltage, unsigned channel);
+int ina22x_voltage_float(ina22x_t *ina22x, float *voltage_mV, unsigned channel);
+int ina22x_current_float(ina22x_t *ina22x, float *current_mA, unsigned channel);

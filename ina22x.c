@@ -44,6 +44,8 @@ int ina22x_reg_write(ina22x_t *ina22x, uint8_t reg, uint16_t val) {
 
 int ina22x_init(ina22x_t *ina22x) {
     int result;
+    if (!ina22x->shurt_resistance_mΩ)
+    	ina22x->shurt_resistance_mΩ = 1;
     ina22x_reg_control_t control = {.reset = 1};
     // Initial Reset
     result = ina22x_reg_write(ina22x, INA22X_REG_CONTROL, control.as_uint16);
@@ -114,10 +116,11 @@ int ina22x_init(ina22x_t *ina22x) {
 
 int ina22x_conversion_ready(ina22x_t *ina22x, bool *ready) {
     int result;
-
+	*ready = false;
     // The location of the conversion register differs between the variants
     switch (ina22x->variant) {
     default:
+
         return -1;
 
     case ina22x_variant_202:
@@ -158,7 +161,55 @@ int ina22x_conversion_ready(ina22x_t *ina22x, bool *ready) {
     return result;
 }
 
-int ina22x_bus_voltage_float(ina22x_t *ina22x, float *voltage, unsigned channel) {
+int ina22x_current_float(ina22x_t *ina22x, float *current_mA, unsigned channel) {
+	int result = 0;
+	int16_t shunt_voltage_val;
+	float lsb = 0.0f;
+	switch (ina22x->variant) {
+	default: return -1;
+	case ina22x_variant_202:
+	case ina22x_variant_226:
+		// LSB 2.5 μV.
+		lsb = 2.5f;
+		if (channel) return -1;
+		result = ina22x_reg_read(ina22x, INA226_REG_SHUNT_VOLTAGE, &shunt_voltage_val);
+		break;
+	case ina22x_variant_220:
+		// LSB 10uV
+		lsb = 10.0f;
+		if (channel) return -1;
+		result = ina22x_reg_read(ina22x, INA220_REG_SHUNT_VOLTAGE, &shunt_voltage_val);
+
+		break;
+	case ina22x_variant_3221:
+		lsb = 5.0f;
+		switch(channel){
+		case 0:
+			result = ina22x_reg_read(ina22x, INA3221_REG_CH1_SHUNT_VOLTAGE, &shunt_voltage_val);
+			break;
+		case 1:
+			result = ina22x_reg_read(ina22x, INA3221_REG_CH2_SHUNT_VOLTAGE, &shunt_voltage_val);
+			break;
+		case 2:
+			result = ina22x_reg_read(ina22x, INA3221_REG_CH3_SHUNT_VOLTAGE, &shunt_voltage_val);
+			break;
+		default:
+			return -1;
+		}
+		break;
+
+	}
+
+	float shunt_voltage_µv = shunt_voltage_val * lsb;
+
+	// 500 mA = 1 volt / 2 ohm
+	*current_mA = shunt_voltage_µv / (float) ina22x->shurt_resistance_mΩ;
+
+
+	return result;
+}
+
+int ina22x_voltage_float(ina22x_t *ina22x, float *voltage, unsigned channel) {
     int result = 0;
 
     switch (ina22x->variant) {
